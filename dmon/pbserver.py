@@ -3,13 +3,16 @@ import functools
 import socket
 
 import tornado.ioloop
-import tornado.log as log
 
 from tornado.options import options
 
+import protocol
 
-def handle_data(server_add, client_addr, data):
-    print(data)
+
+def handle_data(server_addr, client_addr, data):
+    proto = protocol.JSON()
+    event = proto.read(data)
+    print(event)
 
 
 def accept_handler(sock, fd, events):
@@ -25,7 +28,7 @@ def accept_handler(sock, fd, events):
         try:
             handle_data(server_addr, client_addr, data)
         except BaseException as e:
-            log.application.warn(e)
+            print(e)
 
 
 def setup():
