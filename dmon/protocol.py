@@ -4,7 +4,8 @@ import json
 from event import Event
 
 
-class EventProtocol(metaclass=abc.ABCMeta):
+class EventProtocol(object):
+    __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
     def read(self, _bytes):
@@ -29,9 +30,9 @@ class JSON(EventProtocol):
     """
 
     def read(self, _bytes):
-        raw_obj = json.loads(str(_bytes, 'utf-8'))
+        raw_obj = json.loads(_bytes.decode('utf-8'))
         return Event(**raw_obj)
 
     def write(self, event):
         ev = {k: getattr(k, event) for k in event._fields}
-        return bytes(json.dumps(ev).encode('utf-8'))
+        return json.dumps(ev).encode('utf-8')
