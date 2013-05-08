@@ -1,14 +1,24 @@
 import errno
 import eventlet
+import logging
+import sys
 
 from eventlet.green import socket
 
 import protocol
 
 
+logging.basicConfig(steam=sys.stdout)
+log = logging.getLogger(__file__)
+
+
 def handle_data(data, address):
     proto = protocol.JSON()
-    event = proto.read(data)
+    try:
+        event = proto.read(data)
+    except ValueError as e:
+        log.error(e)
+        return
     print(event)
     return event
 
