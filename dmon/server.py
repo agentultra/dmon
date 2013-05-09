@@ -16,7 +16,7 @@ def handle_data(data, address):
     proto = protocol.JSON()
     try:
         event = proto.read(data)
-    except ValueError as e:
+    except (ValueError, TypeError) as e:
         log.error(e)
         return
     print(event)
