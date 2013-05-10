@@ -2,7 +2,7 @@ import argparse
 import eventlet
 
 
-import event_listener
+import server
 
 
 parser = argparse.ArgumentParser(description="dmon distributed cluster monitor")
@@ -21,9 +21,9 @@ def main():
     args = parser.parse_args()
     pool = eventlet.greenpool.GreenPool(args.threadpool_size)
     eventlet.spawn(
-        event_listener.start_datagram_server(args.max_connections,
-                                             args.udp_host,
-                                             args.udp_port)
+        server.start_datagram_server(args.max_connections,
+                                     args.udp_host,
+                                     args.udp_port)
     )
 
 if __name__ == "__main__":
