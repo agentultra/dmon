@@ -12,9 +12,18 @@ setup(
     version=__version__,
     packages=find_packages(),
 
+    setup_requires = [
+        'nose'
+    ],
+
     install_requires = [
         'eventlet',
     ],
+
+    tests_require = [
+        'nose',
+    ],
+    test_suite = 'nose.collector',
 
     author=__author__,
     author_email=__email__,
