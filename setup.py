@@ -1,5 +1,9 @@
 from setuptools import setup, find_packages
 
+try:
+    import multiprocessing
+except ImportError:
+    pass
 
 __author__ = "James King"
 __email__ = "james@agentultra.com"
