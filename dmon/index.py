@@ -1,6 +1,8 @@
 class Index(object):
-    def __init__(self):
-        pass
+    def __init__(self, store=None):
+        if store is None:
+            store = dict()
+        self.store = store
 
     def clear(self):
         """Resets the index"""

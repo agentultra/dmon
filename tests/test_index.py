@@ -7,7 +7,12 @@ from dmon.event import Event
 
 class IndexTestCase(TestCase):
     def setUp(self):
+        self.index_dict = {}
+        self.index = Index(self.index_dict)
+
+    def test_default_constructor(self):
         self.index = Index()
+        self.assertEquals(self.index.store, dict())
 
     @raises(NotImplementedError)
     def test_clear(self):
