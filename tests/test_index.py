@@ -33,10 +33,10 @@ class IndexTestCase(TestCase):
         query_ast = []
         self.index.search(query_ast)
 
-    @raises(NotImplementedError)
     def test_update(self):
         event = self.create_event()
         self.index.update(event)
+        self.assertTrue((event.host, event.service) in self.index.store)
 
     @raises(NotImplementedError)
     def test_get(self):
@@ -55,3 +55,4 @@ class IndexTestCase(TestCase):
         event_attrs = {attr: kwargs.get(attr, default_event_attrs[attr])
                        for attr in default_event_attrs.iterkeys()}
         event = Event(**event_attrs)
+        return event

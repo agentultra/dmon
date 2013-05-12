@@ -28,7 +28,7 @@ class Index(object):
 
     def update(self, event):
         """Adds an event to the index"""
-        raise NotImplementedError()
+        self.store[(event.host, event.service)] = event
 
     def get(self, host, service):
         """Finds an event in the index."""
