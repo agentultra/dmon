@@ -15,12 +15,21 @@ class Index(object):
         """
         return self.store.pop(self._event_key(event), None)
 
-    def expire(self):
+    def expire(self, expiry_time=None):
         """Removes all expired events from the index.
 
         Returns a list of events removed from the index.
         """
-        raise NotImplementedError()
+        expire_events = list()
+        for event in self.store.viewvalues():
+            age = expiry_time - event.time
+            if age > event.ttl:
+                expire_events.append(event)
+        for event in expire_events:
+            self.delete(event)
+
+        return expire_events
+
 
     def search(self, query):
         """Returns a list of events matching a query AST."""
