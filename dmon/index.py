@@ -13,7 +13,7 @@ class Index(object):
 
         Returns the deleted event, if found; None, otherwise.
         """
-        del self.store[(event.host, event.service)]
+        del self.store[self._event_key(event)]
 
     def expire(self):
         """Removes all expired events from the index.
@@ -28,8 +28,11 @@ class Index(object):
 
     def update(self, event):
         """Adds an event to the index"""
-        self.store[(event.host, event.service)] = event
+        self.store[self._event_key(event)] = event
 
     def get(self, host, service):
         """Finds an event in the index."""
         raise NotImplementedError()
+
+    def _event_key(self, event):
+        return (event.host, event.service)
