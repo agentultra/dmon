@@ -32,7 +32,8 @@ class Index(object):
 
     def get(self, host, service):
         """Finds an event in the index."""
-        raise NotImplementedError()
+        event_key = (host, service)
+        return self.store.get(event_key)
 
     def _event_key(self, event):
         return (event.host, event.service)

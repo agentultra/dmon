@@ -40,9 +40,19 @@ class IndexTestCase(TestCase):
         self.index.update(event)
         self.assertTrue((event.host, event.service) in self.index_dict)
 
-    @raises(NotImplementedError)
-    def test_get(self):
-        self.index.get('host.name', 'service name')
+    def test_get_event_exists(self):
+        event = self.create_event()
+        self.index.update(event)
+
+        event_key = (event.host, event.service)
+        found_event = self.index.get(*event_key)
+        self.assertEquals(event, found_event)
+
+    def test_get_event_does_not_exist(self):
+        event = self.create_event()
+        event_key = (event.host, event.service)
+        found_event = self.index.get(*event_key)
+        self.assertEquals(found_event, None)
 
     def create_event(self, **kwargs):
         default_event_attrs = {
