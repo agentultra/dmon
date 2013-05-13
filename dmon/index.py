@@ -6,7 +6,7 @@ class Index(object):
 
     def clear(self):
         """Resets the index"""
-        raise NotImplementedError()
+        self.store.clear()
 
     def delete(self, event):
         """Deletes any event in the index with a matching host and service.

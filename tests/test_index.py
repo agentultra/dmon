@@ -14,9 +14,10 @@ class IndexTestCase(TestCase):
         self.index = Index()
         self.assertEquals(self.index.store, dict())
 
-    @raises(NotImplementedError)
     def test_clear(self):
+        self.index_dict['not'] = 'empty'
         self.index.clear()
+        self.assertEquals(self.index_dict, {})
 
     @raises(NotImplementedError)
     def test_delete(self):
