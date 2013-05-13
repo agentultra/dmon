@@ -19,10 +19,11 @@ class IndexTestCase(TestCase):
         self.index.clear()
         self.assertEquals(self.index_dict, {})
 
-    @raises(NotImplementedError)
     def test_delete(self):
         event = self.create_event()
+        self.index.update(event)
         self.index.delete(event)
+        self.assertEquals(self.index_dict, {})
 
     @raises(NotImplementedError)
     def test_expire(self):
