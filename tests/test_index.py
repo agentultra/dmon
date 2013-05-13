@@ -22,8 +22,15 @@ class IndexTestCase(TestCase):
     def test_delete(self):
         event = self.create_event()
         self.index.update(event)
-        self.index.delete(event)
+        deleted_event = self.index.delete(event)
         self.assertEquals(self.index_dict, {})
+        self.assertEquals(event, deleted_event)
+
+    def test_delete_event_does_not_exist(self):
+        event = self.create_event()
+        deleted_event = self.index.delete(event)
+        self.assertEquals(self.index_dict, {})
+        self.assertEquals(deleted_event, None)
 
     @raises(NotImplementedError)
     def test_expire(self):

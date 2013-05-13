@@ -13,7 +13,7 @@ class Index(object):
 
         Returns the deleted event, if found; None, otherwise.
         """
-        del self.store[self._event_key(event)]
+        return self.store.pop(self._event_key(event), None)
 
     def expire(self):
         """Removes all expired events from the index.
