@@ -40,6 +40,11 @@ class IndexTestCase(TestCase):
         self.index.update(event)
         self.assertTrue((event.host, event.service) in self.index_dict)
 
+    def test_update_expired_event(self):
+        event = self.create_event(state='expired')
+        self.index.update(event)
+        self.assertFalse((event.host, event.service) in self.index_dict)
+
     def test_get_event_exists(self):
         event = self.create_event()
         self.index.update(event)
