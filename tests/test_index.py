@@ -63,6 +63,18 @@ class IndexTestCase(BaseTestCase):
     def test_expire(self):
         event = self.create_event()
         self.index.expire()
+    def test_len(self):
+        event = self.create_event()
+        self.index.update(event)
+        self.assertEquals(len(self.index), 1)
+
+    def test_bool_empty(self):
+        self.assertTrue(self.index)
+
+    def test_bool_non_empty(self):
+        event = self.create_event()
+        self.index.update(event)
+        self.assertTrue(self.index)
 
     @raises(NotImplementedError)
     def test_search(self):

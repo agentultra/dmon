@@ -39,5 +39,11 @@ class Index(object):
         event_key = (host, service)
         return self.store.get(event_key)
 
+    def __len__(self):
+        return len(self.store)
+
+    def __nonzero__(self):
+        return True
+
     def _event_key(self, event):
         return (event.host, event.service)
