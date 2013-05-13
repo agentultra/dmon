@@ -32,16 +32,6 @@ class IndexTestCase(TestCase):
         self.assertEquals(self.index_dict, {})
         self.assertEquals(deleted_event, None)
 
-    @raises(NotImplementedError)
-    def test_expire(self):
-        event = self.create_event()
-        self.index.expire()
-
-    @raises(NotImplementedError)
-    def test_search(self):
-        query_ast = []
-        self.index.search(query_ast)
-
     def test_update(self):
         event = self.create_event()
         updated_event = self.index.update(event)
@@ -82,3 +72,14 @@ class IndexTestCase(TestCase):
                        for attr in default_event_attrs.iterkeys()}
         event = Event(**event_attrs)
         return event
+
+    @raises(NotImplementedError)
+    def test_expire(self):
+        event = self.create_event()
+        self.index.expire()
+
+    @raises(NotImplementedError)
+    def test_search(self):
+        query_ast = []
+        self.index.search(query_ast)
+
