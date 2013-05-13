@@ -30,6 +30,9 @@ class Index(object):
         """Adds an event to the index"""
         if event.state != 'expired':
             self.store[self._event_key(event)] = event
+            return event
+        else:
+            return None
 
     def get(self, host, service):
         """Finds an event in the index."""
