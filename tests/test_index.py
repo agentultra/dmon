@@ -37,7 +37,7 @@ class IndexTestCase(TestCase):
     def test_update(self):
         event = self.create_event()
         self.index.update(event)
-        self.assertTrue((event.host, event.service) in self.index.store)
+        self.assertTrue((event.host, event.service) in self.index_dict)
 
     @raises(NotImplementedError)
     def test_get(self):
