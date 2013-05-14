@@ -77,6 +77,7 @@ class IndexTestCase(BaseTestCase):
         query_ast = []
         self.index.search(query_ast)
 
+
 class IndexExpireTestCase(BaseTestCase):
     NUM_HOSTS = 100
     NUM_SERVICES_PER_HOST = 100

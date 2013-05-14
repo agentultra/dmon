@@ -2,6 +2,7 @@ from unittest import TestCase
 
 from dmon.event import Event
 
+
 class BaseTestCase(TestCase):
     @staticmethod
     def create_event(**kwargs):
@@ -18,4 +19,3 @@ class BaseTestCase(TestCase):
                        for attr in default_event_attrs.iterkeys()}
         event = Event(**event_attrs)
         return event
-
