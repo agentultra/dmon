@@ -22,6 +22,13 @@ protocol possible: JSON.  I plan to eventually add Protocol Buffers
 I'm developing on Python 3.3 because it's awesome.
 
 
+Testing
+-------
+
+To run the unit tests:
+
+    $ python setup.py test
+
 # TODO #
 
 - protocol
