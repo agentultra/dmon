@@ -30,7 +30,6 @@ class Index(object):
 
         return expire_events
 
-
     def search(self, query):
         """Returns a list of events matching a query AST."""
         raise NotImplementedError()
