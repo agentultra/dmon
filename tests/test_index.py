@@ -40,6 +40,13 @@ class IndexTestCase(BaseTestCase):
         self.assertEquals(self.index_dict, {})
         self.assertEquals(deleted_event, None)
 
+    def test_delete_removes_deadline(self):
+        event = self.create_event()
+        self.index.update(event)
+        deleted_event = self.index.delete(event)
+        self.assertTrue(all(len(deadlines) == 0
+                            for deadlines in self.index.deadlines.values()))
+
     def test_update(self):
         event = self.create_event()
         updated_event = self.index.update(event)

@@ -18,7 +18,11 @@ class Index(object):
 
         Returns the deleted event, if found; None, otherwise.
         """
-        return self.store.pop(self._event_key(event), None)
+        deleted_event = self.store.pop(self._event_key(event), None)
+        if deleted_event is not None:
+            deadline = int(deleted_event.time + deleted_event.ttl)
+            self.deadlines[deadline].remove(self._event_key(deleted_event))
+        return deleted_event
 
     def expire(self, expiry_time=None):
         """Removes all expired events from the index.
