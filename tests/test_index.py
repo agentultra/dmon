@@ -79,46 +79,52 @@ class IndexTestCase(BaseTestCase):
 
 
 class IndexExpireTestCase(BaseTestCase):
-    NUM_HOSTS = 100
-    NUM_SERVICES_PER_HOST = 100
-    CURRENT_TIME = 1000000
-    TTL = 60
+    CURRENT_TIME = 1000000000.0
 
     def setUp(self):
         self.index = Index()
-        self.add_events()
 
-    def add_events(self):
-        host_names = map(lambda(i): 'host-%s' % i, range(self.NUM_HOSTS))
-        service_names = map(lambda(i): 'service-%s' % i,
-                            range(self.NUM_SERVICES_PER_HOST))
-        for host_name in host_names:
-            for service_name in service_names:
-                event = self.create_event(
-                    host=host_name,
-                    service=service_name,
-                    time=self.CURRENT_TIME,
-                    ttl=self.TTL)
-                self.index.update(event)
+    def assertExpiredEvents(self, time, expected):
+        expired = self.index.expire(time)
+        expired.sort()
+        expected.sort()
+        self.assertEquals(expired, expected)
 
-    def test_expire_none_returns_none(self):
-        current_expiry_time = self.CURRENT_TIME
-        expired_events = self.index.expire(expiry_time=current_expiry_time)
-        self.assertEquals(len(expired_events), 0)
+    def test_no_events_in_index(self):
+        self.assertExpiredEvents(self.CURRENT_TIME, [])
 
-    def test_expire_none_removes_none(self):
-        num_events = len(self.index)
-        current_expiry_time = self.CURRENT_TIME
-        expired_events = self.index.expire(expiry_time=current_expiry_time)
-        self.assertEquals(len(self.index), num_events)
+    def test_exipre_single_event(self):
+        event = self.create_event(time=self.CURRENT_TIME, ttl=0)
+        self.index.update(event)
+        self.assertExpiredEvents(self.CURRENT_TIME, [event])
 
-    def test_expire_all_removes_all(self):
-        future_expiry_time = self.CURRENT_TIME + self.TTL + 1
-        expired_events = self.index.expire(expiry_time=future_expiry_time)
-        self.assertEquals(len(self.index), 0)
+    def test_no_expired_events(self):
+        event = self.create_event(time=self.CURRENT_TIME, ttl=1)
+        self.index.update(event)
+        self.assertExpiredEvents(self.CURRENT_TIME, [])
 
-    def test_expire_all_returns_all(self):
-        num_events = len(self.index)
-        future_expiry_time = self.CURRENT_TIME + self.TTL + 1
-        expired_events = self.index.expire(expiry_time=future_expiry_time)
-        self.assertEquals(len(expired_events), num_events)
+    def test_no_expired_events_subsecond(self):
+        event = self.create_event(time=self.CURRENT_TIME + 0.05, ttl=0)
+        self.index.update(event)
+        self.assertExpiredEvents(self.CURRENT_TIME, [])
+
+    def test_expire_multiple_events(self):
+        expired_events = [
+            self.create_event(
+                host='test-%d' % i,
+                service='expired'
+                time=self.CURRENT_TIME,
+                ttl=0)
+            for i in range(100)
+        ]
+        fresh_events = [
+            self.create_event(
+                host='test-%d' % i
+                service='fresh',
+                time=self.CURRENT_TIME,
+                ttl=1)
+            for i in range(100)
+        ]
+        for event in expired_events + fresh_events:
+            self.index.update(event)
+        self.assertExpiredEvents(self.CURRENT_TIME, expired_events)
