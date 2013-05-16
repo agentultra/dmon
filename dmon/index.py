@@ -1,12 +1,17 @@
+from collections import defaultdict
+
+
 class Index(object):
     def __init__(self, store=None):
         if store is None:
             store = dict()
         self.store = store
+        self.deadlines = defaultdict(list)
 
     def clear(self):
         """Resets the index"""
         self.store.clear()
+        self.deadlines.clear()
 
     def delete(self, event):
         """Deletes any event in the index with a matching host and service.
@@ -38,6 +43,8 @@ class Index(object):
         """Adds an event to the index"""
         if event.state != 'expired':
             self.store[self._event_key(event)] = event
+            deadline = int(event.time + event.ttl)
+            self.deadlines[deadline].append(self._event_key(event))
             return event
         else:
             return None

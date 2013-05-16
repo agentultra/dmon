@@ -15,10 +15,17 @@ class IndexTestCase(BaseTestCase):
         self.index = Index()
         self.assertEquals(self.index.store, dict())
 
-    def test_clear(self):
-        self.index_dict['not'] = 'empty'
+    def test_clear_empties_index(self):
+        event = self.create_event()
+        self.index.update(event)
         self.index.clear()
         self.assertEquals(self.index_dict, {})
+
+    def test_clear_empties_deadlines(self):
+        event = self.create_event()
+        self.index.update(event)
+        self.index.clear()
+        self.assertEquals(self.index.deadlines, {})
 
     def test_delete(self):
         event = self.create_event()
@@ -38,6 +45,11 @@ class IndexTestCase(BaseTestCase):
         updated_event = self.index.update(event)
         self.assertTrue((event.host, event.service) in self.index_dict)
         self.assertEquals(event, updated_event)
+
+    def test_update_deadline(self):
+        event = self.create_event(time=0.0, ttl=0)
+        updated_event = self.index.update(event)
+        self.assertTrue((event.host, event.service) in self.index.deadlines[0])
 
     def test_update_expired_event(self):
         event = self.create_event(state='expired')
