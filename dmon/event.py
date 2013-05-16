@@ -1,3 +1,4 @@
+import math
 from collections import namedtuple
 
 
@@ -20,4 +21,4 @@ class Event(namedtuple('Event', EVENT_ATTRS)):
 
     @property
     def deadline(self):
-        return int(self.time + self.ttl)
+        return int(math.ceil(self.time + self.ttl))

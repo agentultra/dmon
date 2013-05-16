@@ -56,7 +56,8 @@ class IndexTestCase(BaseTestCase):
     def test_update_deadline(self):
         event = self.create_event(time=0.0, ttl=0)
         updated_event = self.index.update(event)
-        self.assertTrue((event.host, event.service) in self.index.deadlines[0])
+        self.assertTrue(
+            (event.host, event.service) in self.index.deadlines[event.deadline])
 
     def test_update_expired_event(self):
         event = self.create_event(state='expired')
@@ -147,3 +148,19 @@ class IndexExpireTestCase(BaseTestCase):
         for event in expired_events + fresh_events:
             self.index.update(event)
         self.assertExpiredEvents(self.CURRENT_TIME, expired_events)
+
+    def test_expire_older_events(self):
+        current_event = self.create_event(
+            host='test-1',
+            service='expired',
+            time=self.CURRENT_TIME,
+            ttl=0)
+        self.index.update(current_event)
+        older_event = self.create_event(
+            host='test-2',
+            service='expired',
+            time=self.CURRENT_TIME - 1,
+            ttl=0)
+        self.index.update(older_event)
+        self.assertExpiredEvents(
+            self.CURRENT_TIME, [current_event, older_event])

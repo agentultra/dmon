@@ -13,7 +13,7 @@ class BaseTestCase(TestCase):
             'description': 'text description',
             'time': 1368210977,
             'ttl': 600,
-            'metric': 'tps'
+            'metric': 10
         }
         event_attrs = {attr: kwargs.get(attr, default_event_attrs[attr])
                        for attr in default_event_attrs.iterkeys()}

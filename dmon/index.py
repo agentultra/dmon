@@ -39,15 +39,22 @@ class Index(object):
 
         Returns a list of events removed from the index.
         """
-        expire_events = list()
-        for event in self.store.viewvalues():
-            age = expiry_time - event.time
-            if age >= event.ttl:
-                expire_events.append(event)
-        for event in expire_events:
-            self.delete(event)
+        expired_events = []
+        max_deadline = int(expiry_time)
+        deadlines = filter(lambda(deadline): deadline <= max_deadline,
+                           self.deadlines.keys())
 
-        return expire_events
+        for deadline in deadlines:
+            expired_event_keys = self.deadlines[deadline]
+
+            for expired_event_key in expired_event_keys:
+                event = self.get(*expired_event_key)
+                self.store.pop(expired_event_key)
+                expired_events.append(event)
+
+            del self.deadlines[deadline]
+
+        return expired_events
 
     def clear(self):
         """Resets the index"""
