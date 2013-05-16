@@ -4,6 +4,7 @@ import json
 from event import Event
 
 
+class MalformedEventError(ValueError): pass
 class UnsupportedProtocolError(BaseException): pass
 
 
@@ -34,10 +35,13 @@ class JSON(EventProtocol):
 
     def read(self, _bytes):
         raw_obj = json.loads(_bytes.decode('utf-8'))
-        return Event(**raw_obj)
+        try:
+            return Event(**raw_obj)
+        except TypeError as e:
+            raise MalformedEventError("Received malformed event: %s" % raw_obj)
 
     def write(self, event):
-        ev = {k: getattr(k, event) for k in event._fields}
+        ev = {k: getattr(event, k) for k in event._fields}
         return json.dumps(ev).encode('utf-8')
 
 
