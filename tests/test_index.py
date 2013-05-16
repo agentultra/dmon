@@ -112,14 +112,14 @@ class IndexExpireTestCase(BaseTestCase):
         expired_events = [
             self.create_event(
                 host='test-%d' % i,
-                service='expired'
+                service='expired',
                 time=self.CURRENT_TIME,
                 ttl=0)
             for i in range(100)
         ]
         fresh_events = [
             self.create_event(
-                host='test-%d' % i
+                host='test-%d' % i,
                 service='fresh',
                 time=self.CURRENT_TIME,
                 ttl=1)

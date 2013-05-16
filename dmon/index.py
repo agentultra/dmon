@@ -23,7 +23,7 @@ class Index(object):
         expire_events = list()
         for event in self.store.viewvalues():
             age = expiry_time - event.time
-            if age > event.ttl:
+            if age >= event.ttl:
                 expire_events.append(event)
         for event in expire_events:
             self.delete(event)
