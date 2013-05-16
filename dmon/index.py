@@ -8,20 +8,32 @@ class Index(object):
         self.store = store
         self.deadlines = defaultdict(list)
 
-    def clear(self):
-        """Resets the index"""
-        self.store.clear()
-        self.deadlines.clear()
+    def update(self, event):
+        """Adds an event to the index"""
+        if event.state != 'expired':
+            event_key = self._event_key(event)
+            self.store[event_key] = event
+            deadline = self._event_deadline(event)
+            self.deadlines[deadline].append(event_key)
+            return event
+        else:
+            return None
+
+    def get(self, host, service):
+        """Finds an event in the index."""
+        event_key = (host, service)
+        return self.store.get(event_key)
 
     def delete(self, event):
         """Deletes any event in the index with a matching host and service.
 
         Returns the deleted event, if found; None, otherwise.
         """
-        deleted_event = self.store.pop(self._event_key(event), None)
+        event_key = self._event_key(event)
+        deleted_event = self.store.pop(event_key, None)
         if deleted_event is not None:
-            deadline = int(deleted_event.time + deleted_event.ttl)
-            self.deadlines[deadline].remove(self._event_key(deleted_event))
+            deadline = self._event_deadline(deleted_event)
+            self.deadlines[deadline].remove(event_key)
         return deleted_event
 
     def expire(self, expiry_time=None):
@@ -39,24 +51,14 @@ class Index(object):
 
         return expire_events
 
+    def clear(self):
+        """Resets the index"""
+        self.store.clear()
+        self.deadlines.clear()
+
     def search(self, query):
         """Returns a list of events matching a query AST."""
         raise NotImplementedError()
-
-    def update(self, event):
-        """Adds an event to the index"""
-        if event.state != 'expired':
-            self.store[self._event_key(event)] = event
-            deadline = int(event.time + event.ttl)
-            self.deadlines[deadline].append(self._event_key(event))
-            return event
-        else:
-            return None
-
-    def get(self, host, service):
-        """Finds an event in the index."""
-        event_key = (host, service)
-        return self.store.get(event_key)
 
     def __len__(self):
         return len(self.store)
@@ -66,3 +68,6 @@ class Index(object):
 
     def _event_key(self, event):
         return (event.host, event.service)
+
+    def _event_deadline(self, event):
+        return int(event.time + event.ttl)
