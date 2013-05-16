@@ -4,6 +4,9 @@ import json
 from event import Event
 
 
+class UnsupportedProtocolError(BaseException): pass
+
+
 class EventProtocol(object):
     __metaclass__ = abc.ABCMeta
 
@@ -36,3 +39,13 @@ class JSON(EventProtocol):
     def write(self, event):
         ev = {k: getattr(k, event) for k in event._fields}
         return json.dumps(ev).encode('utf-8')
+
+
+PROTOCOLS = {'json': JSON}
+
+
+def get_protocol(name):
+    try:
+        return PROTOCOLS[name.lower()]
+    except KeyError as e:
+        raise UnsupportedProtocolError("%s is an unsupported protocol" % name)

@@ -1,19 +1,20 @@
 import errno
 import eventlet
+import functools
 import logging
 import sys
 
 from eventlet.green import socket
 
-import protocol
+import protocol as _protocol
 
 
 logging.basicConfig(steam=sys.stdout)
 log = logging.getLogger(__file__)
 
 
-def handle_data(data, address):
-    proto = protocol.JSON()
+def handle_data(protocol, data, address):
+    proto = protocol()
     try:
         event = proto.read(data)
     except (ValueError, TypeError) as e:
@@ -23,7 +24,7 @@ def handle_data(data, address):
     return event
 
 
-def start_datagram_server(max_connections, host, port, buf_size=4096):
+def start_datagram_server(max_connections, host, port, buf_size=4096, protocol="json"):
     print "Listening for event datagrams on: ", host, port
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -33,7 +34,8 @@ def start_datagram_server(max_connections, host, port, buf_size=4096):
 
     while True:
         try:
-            pool.spawn_n(handle_data, *sock.recvfrom(buf_size))
+            handler = functools.partial(handle_data, _protocol.get_protocol(protocol))
+            pool.spawn_n(handler, *sock.recvfrom(buf_size))
         except socket.error as e:
             if e.args[0] in (errno.EWOULDBLOCK, errno.EAGAIN):
                 return
