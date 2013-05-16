@@ -4,6 +4,7 @@ import random
 from dmon.index import Index
 from dmon.event import Event
 
+CURRENT_TIME = time.time()
 
 def add_random_events(index, total_events, expired_ratio):
     num_expired = int(total_events * expired_ratio)
@@ -15,20 +16,19 @@ def add_random_events(index, total_events, expired_ratio):
             service='service',
             state='up',
             description='description',
-            time=time.time(),
+            time=CURRENT_TIME,
             ttl=random.randint(300, 600),
             metric=0.5)
         index.update(event)
 
     for i in range(num_expired):
-        age = random.randint(0, 300)
         event = Event(
             host='host-%d' % i,
             service='service',
             state='up',
             description='description',
-            time=time.time() - age,
-            ttl=age,
+            time=CURRENT_TIME - random.randint(1, 300),
+            ttl=0,
             metric=0.5)
         index.update(event)
 
@@ -41,8 +41,11 @@ if __name__ == '__main__':
         add_event_time = time.time() - now
 
         now = time.time()
-        expired = index.expire(now)
+        expired = index.expire(CURRENT_TIME)
         expired_event_time = time.time() - now
+        num_expired = len(expired)
 
-        print 'Add: {:.4f} seconds Expire: {:.4f} seconds'.format(
-            add_event_time, expired_event_time)
+        print ('Add: {:.4f} seconds '
+               'Expire: {:.4f} seconds '
+               'Expired: {} events'.format(
+                   add_event_time, expired_event_time, num_expired))
