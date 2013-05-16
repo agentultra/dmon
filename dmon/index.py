@@ -11,10 +11,9 @@ class Index(object):
     def update(self, event):
         """Adds an event to the index"""
         if event.state != 'expired':
-            event_key = self._event_key(event)
+            event_key = event.index_key
             self.store[event_key] = event
-            deadline = self._event_deadline(event)
-            self.deadlines[deadline].append(event_key)
+            self.deadlines[event.deadline].append(event_key)
             return event
         else:
             return None
@@ -29,11 +28,10 @@ class Index(object):
 
         Returns the deleted event, if found; None, otherwise.
         """
-        event_key = self._event_key(event)
+        event_key = event.index_key
         deleted_event = self.store.pop(event_key, None)
         if deleted_event is not None:
-            deadline = self._event_deadline(deleted_event)
-            self.deadlines[deadline].remove(event_key)
+            self.deadlines[event.deadline].remove(event_key)
         return deleted_event
 
     def expire(self, expiry_time=None):
@@ -65,9 +63,3 @@ class Index(object):
 
     def __nonzero__(self):
         return True
-
-    def _event_key(self, event):
-        return (event.host, event.service)
-
-    def _event_deadline(self, event):
-        return int(event.time + event.ttl)
