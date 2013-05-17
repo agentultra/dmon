@@ -1,7 +1,8 @@
 from unittest import TestCase
 from nose.tools import raises
+import mock
 
-from dmon.index import Index
+from dmon.index import Index, ExpiryTask
 
 from .base import BaseTestCase
 
@@ -56,8 +57,8 @@ class IndexTestCase(BaseTestCase):
     def test_update_deadline(self):
         event = self.create_event(time=0.0, ttl=0)
         updated_event = self.index.update(event)
-        self.assertTrue(
-            (event.host, event.service) in self.index.deadlines[event.deadline])
+        self.assertTrue((event.host, event.service) in
+                        self.index.deadlines[event.deadline])
 
     def test_update_expired_event(self):
         event = self.create_event(state='expired')
@@ -164,3 +165,21 @@ class IndexExpireTestCase(BaseTestCase):
         self.index.update(older_event)
         self.assertExpiredEvents(
             self.CURRENT_TIME, [current_event, older_event])
+
+
+class ExpiryTaskTestCase(TestCase):
+    def setUp(self):
+        self.index = mock.Mock(spec=Index)
+        self.timer = ExpiryTask(self.index)
+
+    @mock.patch('dmon.index.get_hub')
+    def test_schedule_adds_to_hub(self, hub):
+        hub.return_value = mock.Mock()
+        self.timer.schedule()
+        hub.return_value.schedule_call_global.assert_called_with(1, self.timer)
+
+    @mock.patch('dmon.index.time.time')
+    def test_call_expires_index(self, time):
+        time.return_value = mock.sentinel.current_time
+        self.timer()
+        self.index.expire.assert_called_with(mock.sentinel.current_time)

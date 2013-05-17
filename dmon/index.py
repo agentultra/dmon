@@ -1,4 +1,6 @@
+import time
 from collections import defaultdict
+from eventlet.hubs import get_hub
 
 
 class Index(object):
@@ -70,3 +72,17 @@ class Index(object):
 
     def __nonzero__(self):
         return True
+
+
+class ExpiryTask(object):
+    TIMER_PERIOD = 1
+
+    def __init__(self, index):
+        self.index = index
+
+    def schedule(self):
+        get_hub().schedule_call_global(self.TIMER_PERIOD, self)
+
+    def __call__(self):
+        self.schedule()
+        self.index.expire(time.time())
