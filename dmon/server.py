@@ -7,10 +7,13 @@ import sys
 from eventlet.green import socket
 
 import protocol as _protocol
+import conf
 
 
-logging.basicConfig(steam=sys.stdout)
+logging.basicConfig(stream=sys.stdout)
 log = logging.getLogger(__file__)
+
+streams = conf.get_streams()
 
 
 def handle_data(protocol, data, address):
@@ -20,8 +23,9 @@ def handle_data(protocol, data, address):
     except (ValueError, TypeError) as e:
         log.error(e)
         return
-    print(event)
-    return event
+    else:
+        for stream in streams:
+            eventlet.spawn_n(stream.send, event)
 
 
 def start_datagram_server(max_connections, host, port, buf_size=4096, protocol="json"):
@@ -30,12 +34,12 @@ def start_datagram_server(max_connections, host, port, buf_size=4096, protocol="
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     sock.bind((host, port))
 
-    pool = eventlet.GreenPool(size=max_connections)
+    conn_pool = eventlet.GreenPool(size=max_connections)
 
     while True:
         try:
             handler = functools.partial(handle_data, _protocol.get_protocol(protocol))
-            pool.spawn_n(handler, *sock.recvfrom(buf_size))
+            conn_pool.spawn_n(handler, *sock.recvfrom(buf_size))
         except socket.error as e:
             if e.args[0] in (errno.EWOULDBLOCK, errno.EAGAIN):
                 return

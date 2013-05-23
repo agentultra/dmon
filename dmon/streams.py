@@ -1,4 +1,9 @@
+import eventlet
+
 from functools import wraps
+
+
+__all__ = ["coroutine", "printer", "when"]
 
 
 def coroutine(func):
@@ -19,7 +24,7 @@ def when(_test, target):
 
 
 @coroutine
-def printer():
+def printer(prefix):
     while True:
         event = (yield)
-        print(event)
+        print(prefix, event)

@@ -49,6 +49,10 @@ PROTOCOLS = {'json': JSON}
 
 
 def get_protocol(name):
+    # I'd like to fetch the class from the module directly, but
+    # issubclass can't make a weakref to a module object to make the
+    # comparison.  This might not be the best API but I won't know
+    # until I get configuration done. --agentultra
     try:
         return PROTOCOLS[name.lower()]
     except KeyError as e:
