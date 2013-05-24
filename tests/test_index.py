@@ -181,5 +181,11 @@ class ExpiryTaskTestCase(TestCase):
     @mock.patch('dmon.index.time.time')
     def test_call_expires_index(self, time):
         time.return_value = mock.sentinel.current_time
+        self.index.expire.return_value = []
         self.timer()
         self.index.expire.assert_called_with(mock.sentinel.current_time)
+
+    def test_call_deletes_expired_events(self):
+        self.index.expire.return_value = [mock.sentinel.EVENT]
+        self.timer()
+        self.index.delete.assert_called_with(mock.sentinel.EVENT)

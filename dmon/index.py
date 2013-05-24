@@ -85,4 +85,6 @@ class ExpiryTask(object):
 
     def __call__(self):
         self.schedule()
-        self.index.expire(time.time())
+        expired_events = self.index.expire(time.time())
+        for event in expired_events:
+            self.index.delete(event)
