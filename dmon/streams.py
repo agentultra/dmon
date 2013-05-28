@@ -3,10 +3,10 @@ import eventlet
 from functools import wraps
 
 
-__all__ = ["coroutine", "printer", "when"]
+__all__ = ["average", "send", "stream", "printer", "when"]
 
 
-def coroutine(func):
+def stream(func):
     @wraps(func)
     def wrapped(*args, **kwargs):
         cr = func(*args, **kwargs)
@@ -15,15 +15,32 @@ def coroutine(func):
     return wrapped
 
 
-@coroutine
+def send(event, *targets):
+    for target in targets:
+        eventlet.spawn_n(target.send, event)
+
+
+@stream
 def when(_test, target):
     while True:
         event = (yield)
         if _test(event):
-            target.send(event)
+            send(event, target)
 
 
-@coroutine
+@stream
+def average(round_places, *targets):
+    total = 0.0
+    count = 0
+    while True:
+        event = (yield)
+        total += float(event.metric)
+        count += 1
+        avg_event = event._replace(metric=round(total / count, round_places))
+        send(avg_event, *targets)
+
+
+@stream
 def printer(prefix):
     while True:
         event = (yield)
