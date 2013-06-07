@@ -21,11 +21,11 @@ def send(event, *targets):
 
 
 @stream
-def when(_test, target):
+def when(_test, *targets):
     while True:
         event = (yield)
         if _test(event):
-            send(event, target)
+            send(event, *targets)
 
 
 @stream
