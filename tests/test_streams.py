@@ -50,3 +50,14 @@ class TestStreams(unittest.TestCase):
 
         self.assertEqual(self.processed_events,
                          [self.event(state='offline')])
+
+    def test_average(self):
+        stream = average(2, self.sink())
+        for m in [2, 3, 5]:
+            stream.send(self.event(metric=m))
+
+        print(self.processed_events)
+        self.assertEqual(self.processed_events,
+                         [self.event(metric=2.0),
+                          self.event(metric=2.5),
+                          self.event(metric=3.33)])
