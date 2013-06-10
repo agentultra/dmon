@@ -36,5 +36,11 @@ setup(
     classifiers=[
         "Development Status :: 3 - Alpha",
         "License :: OSI Approved :: MIT License",
-    ]
+    ],
+
+    entry_points={
+        'console_scripts': [
+            'dmon_shell = dmon.shell:run',
+        ]
+    }
 )
