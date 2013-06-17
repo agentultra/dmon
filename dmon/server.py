@@ -6,13 +6,13 @@ import sys
 
 from eventlet.green import socket
 
-import protocol as _protocol
 import conf
+import protocol as _protocol
+import pubsub
 
 
 logging.basicConfig(stream=sys.stdout)
 log = logging.getLogger(__file__)
-
 streams = conf.get_streams()
 
 
@@ -24,8 +24,7 @@ def handle_data(protocol, data, address):
         log.error(e)
         return
     else:
-        for stream in streams:
-            eventlet.spawn_n(stream.send, event)
+        pubsub.publish("events", event)
 
 
 def start_datagram_server(max_connections, host, port, buf_size=4096, protocol="json"):
@@ -38,7 +37,8 @@ def start_datagram_server(max_connections, host, port, buf_size=4096, protocol="
 
     while True:
         try:
-            handler = functools.partial(handle_data, _protocol.get_protocol(protocol))
+            handler = functools.partial(handle_data,
+                                        _protocol.get_protocol(protocol))
             conn_pool.spawn_n(handler, *sock.recvfrom(buf_size))
         except socket.error as e:
             if e.args[0] in (errno.EWOULDBLOCK, errno.EAGAIN):
