@@ -8,7 +8,7 @@ pool = eventlet.GreenPool(200)
 
 
 def subscribe(func, topic):
-    pool.spawn_n(topics[topic].append, weakref.ref(func))
+    topics[topic].append(weakref.ref(func))
 
 
 def publish(topic, *args, **kwargs):
