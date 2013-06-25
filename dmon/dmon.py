@@ -19,7 +19,6 @@ parser.add_argument("--threadpool_size", type=int, default=1000,
 
 def main():
     args = parser.parse_args()
-    pool = eventlet.greenpool.GreenPool(args.threadpool_size)
     eventlet.spawn(
         server.start_datagram_server(args.max_connections,
                                      args.udp_host,
