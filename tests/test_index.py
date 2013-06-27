@@ -12,6 +12,10 @@ class IndexTestCase(BaseTestCase):
         self.index_dict = {}
         self.index = Index(self.index_dict)
 
+    def test_factory(self):
+        index = Index.factory()
+        self.assertEqual(index, index.factory())
+
     def test_default_constructor(self):
         self.index = Index()
         self.assertEquals(self.index.store, dict())

@@ -10,6 +10,12 @@ class Index(object):
         self.store = store
         self.deadlines = defaultdict(list)
 
+    @classmethod
+    def factory(cls):
+        if not hasattr(cls, 'instance'):
+            cls.instance = cls()
+        return cls.instance
+
     def update(self, event):
         """Adds an event to the index"""
         if event.state != 'expired':
