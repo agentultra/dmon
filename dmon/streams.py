@@ -2,8 +2,9 @@ import eventlet
 
 from functools import wraps
 
+from .index import Index
 
-__all__ = ["average", "send", "stream", "printer", "when"]
+__all__ = ["average", "send", "stream", "printer", "when", "index"]
 
 
 def stream(func):
@@ -45,3 +46,10 @@ def printer(prefix):
     while True:
         event = (yield)
         print(prefix, event)
+
+@stream
+def index():
+    index = Index.factory()
+    while True:
+        event = (yield)
+        index.update(event)
