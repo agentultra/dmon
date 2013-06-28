@@ -3,6 +3,7 @@ import unittest
 
 from dmon.event import Event
 from dmon.streams import *
+from dmon.index import Index
 from functools import wraps
 
 
@@ -12,6 +13,7 @@ class TestStreams(unittest.TestCase):
         self._original_spawn_n = eventlet.spawn_n
         eventlet.spawn_n = self.stub_spawn_n(eventlet.spawn_n)
         self.processed_events = []
+        self.index = Index.factory()
 
     def stub_spawn_n(self, spawn_n):
         @wraps(spawn_n)
@@ -22,7 +24,9 @@ class TestStreams(unittest.TestCase):
 
     def tearDown(self):
         eventlet.spawn_n = self._original_spawn_n
-
+        if hasattr(Index, 'instance'):
+            del Index.instance
+        self.index = None
 
     def event(self,
               host="123.123.12.1",
@@ -61,3 +65,10 @@ class TestStreams(unittest.TestCase):
                          [self.event(metric=2.0),
                           self.event(metric=2.5),
                           self.event(metric=3.33)])
+
+    def test_index(self):
+        stream = index()
+        event = self.event(state='online')
+        stream.send(event)
+        stored_event = self.index.get(event.host, event.service)
+        self.assertEqual(event, stored_event)

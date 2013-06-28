@@ -1,4 +1,6 @@
+import time
 from collections import defaultdict
+from eventlet.hubs import get_hub
 
 
 class Index(object):
@@ -7,6 +9,12 @@ class Index(object):
             store = dict()
         self.store = store
         self.deadlines = defaultdict(list)
+
+    @classmethod
+    def factory(cls):
+        if not hasattr(cls, 'instance'):
+            cls.instance = cls()
+        return cls.instance
 
     def update(self, event):
         """Adds an event to the index"""
@@ -70,3 +78,19 @@ class Index(object):
 
     def __nonzero__(self):
         return True
+
+
+class ExpiryTask(object):
+    TIMER_PERIOD = 1
+
+    def __init__(self, index):
+        self.index = index
+
+    def schedule(self):
+        get_hub().schedule_call_global(self.TIMER_PERIOD, self)
+
+    def __call__(self):
+        self.schedule()
+        expired_events = self.index.expire(time.time())
+        for event in expired_events:
+            self.index.delete(event)
