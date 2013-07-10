@@ -13,7 +13,6 @@ import pubsub
 
 logging.basicConfig(stream=sys.stdout)
 log = logging.getLogger(__file__)
-streams = conf.get_streams()
 
 
 def handle_data(protocol, data, address):

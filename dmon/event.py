@@ -5,10 +5,8 @@ import conf
 import pubsub
 
 
-streams = conf.get_streams()
-
-
 def process_event(event):
+    streams = conf.get_streams()
     for stream in streams:
         stream.send(event)
 
