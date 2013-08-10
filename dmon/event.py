@@ -1,6 +1,18 @@
 import math
 from collections import namedtuple
 
+import conf
+import pubsub
+
+
+def process_event(event):
+    streams = conf.get_streams()
+    for stream in streams:
+        stream.send(event)
+
+
+pubsub.subscribe(process_event, "events")
+
 
 EVENT_ATTRS = [
     'host',
