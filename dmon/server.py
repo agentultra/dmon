@@ -6,7 +6,6 @@ import sys
 
 from eventlet.green import socket
 
-import conf
 import protocol as _protocol
 import pubsub
 
@@ -19,8 +18,8 @@ def handle_data(protocol, data, address):
     proto = protocol()
     try:
         event = proto.read(data)
-    except (ValueError, TypeError) as e:
-        log.error(e)
+    except (ValueError, TypeError):
+        log.exception("Error decoding event from %s" % address)
         return
     else:
         pubsub.publish("events", event)

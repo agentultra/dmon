@@ -1,10 +1,6 @@
 import argparse
-import json
-import os
-import random
 import socket
 import textwrap
-import time
 
 from event import Event
 from protocol import get_protocol

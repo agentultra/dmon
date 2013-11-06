@@ -1,7 +1,6 @@
 import importlib
 import inspect
 import os
-import sys
 
 
 ENVIRONMENT_VARIABLE = 'DMON_STREAM_MODULE'
@@ -14,7 +13,7 @@ class ImproperlyConfigured(BaseException): pass
 def _import_stream_module():
     try:
         settings_module = os.environ[ENVIRONMENT_VARIABLE]
-    except KeyError as e:
+    except KeyError:
         raise ImproperlyConfigured("Missing module name")
     else:
         try:

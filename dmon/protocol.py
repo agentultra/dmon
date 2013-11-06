@@ -55,5 +55,5 @@ def get_protocol(name):
     # until I get configuration done. --agentultra
     try:
         return PROTOCOLS[name.lower()]
-    except KeyError as e:
+    except KeyError:
         raise UnsupportedProtocolError("%s is an unsupported protocol" % name)
