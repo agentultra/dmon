@@ -19,7 +19,7 @@ def handle_data(protocol, data, address):
     try:
         event = proto.read(data)
     except (ValueError, TypeError):
-        log.exception("Error decoding event from %s" % address)
+        log.exception("Error decoding event from %s", address)
         return
     else:
         pubsub.publish("events", event)

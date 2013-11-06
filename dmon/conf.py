@@ -18,7 +18,7 @@ def _import_stream_module():
     else:
         try:
             mod = importlib.import_module(settings_module)
-        except ImportError as e:
+        except ImportError:
             raise ImportError("Could not import stream module '%s' "
                               "(Is it on sys.path?)" % settings_module)
         else:

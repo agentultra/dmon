@@ -37,7 +37,7 @@ class JSON(EventProtocol):
         raw_obj = json.loads(_bytes.decode('utf-8'))
         try:
             return Event(**raw_obj)
-        except TypeError as e:
+        except TypeError:
             raise MalformedEventError("Received malformed event: %s" % raw_obj)
 
     def write(self, event):
