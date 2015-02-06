@@ -4,7 +4,7 @@
 *.so
 
 # Packages
-*.egg
+*.egg[s]
 *.egg-info
 dist
 build
@@ -34,3 +34,6 @@ htmlcov
 .mr.developer.cfg
 .project
 .pydevproject
+
+# Rope
+.ropeproject

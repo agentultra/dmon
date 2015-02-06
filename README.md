@@ -19,7 +19,11 @@ can import your module and it'll handle the rest:
 
     $ export PYTHONPATH="/path/to/my/module:$PYTHONPATH"
     $ export DMON_STREAM_MODULE="mystream"
-    $ cd /to/my/dmon/env && source bin/activate && python dmon/dmon/dmon.py
+    $ cd /to/my/dmon/env && source bin/activate
+    (dmon)$ cd dmon && pip install -e .
+    ...
+    (dmon)$ python -m dmon.dmon
+    Listening for event datagrams on:  127.0.0.1 7689
 
 That should get the UDP listener up and ready to receive events.
 
@@ -49,12 +53,19 @@ To run the unit tests:
 
     $ python setup.py test
 
+You can also interact with the dmon server using a convenient shell:
+
+    $ python -m dmon.shell <shell>
+
+Where shell can be one of *plain*, *ipython*, or *bpython*. It is
+optional and defaults to *plain*. The alternative options require the
+respective shells be installed on your system.
+
 # TODO #
 
 - protocol
   - protobuf
   - thrift ?
   - jsonschema ?
-- stream processing
 - event storage / querying
 - web socket support
