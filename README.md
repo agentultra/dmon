@@ -10,6 +10,30 @@ something like:
     stream = when(lambda event: event['state'] == "warning",
                   email("me@mycompany.com"))
 
+Why Python For Configuration?
+-----------------------------
+
+### Flexibility ###
+
+The user defines the stream functions they need. Dmon doesn't need to
+anticipate every aggregate or rating function and reinvent the wheel.
+No need to learn another configuration language: use the one you're
+already familiar with.
+
+### Developer Tools ###
+
+Streams are defined in a plain, old Python module. All of the tools
+you use to test, lint, and maintain Python code work on your stream
+modules. All of the editor support you rely on just works because it's
+just normal Python code.
+
+### Contributor Friendliness ###
+
+No need to maintain a parser.
+
+Getting Started
+---------------
+
 To start a dmon server, you'll first need to write a Python module
 with your streams in it.  A stream is just a co-routine that receives
 events ("is yielded into"), does some processing, and sends the events
@@ -67,5 +91,5 @@ respective shells be installed on your system.
   - protobuf
   - thrift ?
   - jsonschema ?
-- event storage / querying
+- event storage / querying (in progress)
 - web socket support
