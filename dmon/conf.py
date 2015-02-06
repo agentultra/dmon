@@ -3,6 +3,12 @@ import inspect
 import os
 
 
+try:
+    import hy
+except ImportError:
+    pass
+
+
 ENVIRONMENT_VARIABLE = 'DMON_STREAM_MODULE'
 _streams = None
 
