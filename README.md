@@ -7,8 +7,19 @@ Inspired by Riemann, dmon will use Python coroutines as its
 stream-processing language.  An example configuration will look
 something like:
 
+    from dmon.streams import *
+
     stream = when(lambda event: event['state'] == "warning",
                   email("me@mycompany.com"))
+
+If you have Hy installed you can also write your configuration in Hy:
+
+    (import [dmon.streams [*]])
+    
+    (setv stream
+      (average 2
+        (when (fn [ev] (> (.get ev "metric") 1.85))
+              (email "me@mycompany.com"))))
 
 Why Python For Configuration?
 -----------------------------
@@ -79,10 +90,10 @@ To run the unit tests:
 
 You can also interact with the dmon server using a convenient shell:
 
-    $ python -m dmon.shell <shell>
+    $ python -m dmon.shell -s <shell>
 
-Where shell can be one of *plain*, *ipython*, or *bpython*. It is
-optional and defaults to *plain*. The alternative options require the
+Where shell can be one of *python*, *ipython*, or *bpython*. It is
+optional and defaults to *python*. The alternative options require the
 respective shells be installed on your system.
 
 # TODO #
